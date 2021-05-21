@@ -26,10 +26,14 @@ $zipCode = filter_input(INPUT_GET, 'zip-code');
             $startDate = new DateTime($startDate, new DateTimeZone(Utils::DEFAULT_DATE_TIME_ZONE));
             $endDate = new DateTime($endDate, new DateTimeZone(Utils::DEFAULT_DATE_TIME_ZONE));
 
-            $estimatedDelivery = new EstimatedDeliveryService($zipCode, $startDate, $endDate);
-            $estimation = $estimatedDelivery->getEstimatedDelivery();
-            if ($estimation === null) {
-                $notFoundMessage = 'Could not find historical data for estimation!';
+            if ($startDate->getTimestamp() > $endDate->getTimestamp()) {
+                $notFoundMessage = 'Start Date is greater than End Date for historical data estimation!';
+            } else {
+                $estimatedDelivery = new EstimatedDeliveryService($zipCode, $startDate, $endDate);
+                $estimation = $estimatedDelivery->getEstimatedDelivery();
+                if ($estimation === null) {
+                    $notFoundMessage = 'Could not find historical data for estimation!';
+                }
             }
         } catch (Exception $e) {
             echo $e->getMessage();
